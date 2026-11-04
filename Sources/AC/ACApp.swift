@@ -15,7 +15,7 @@ struct ACApp: App {
                     let model = ACModel()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                         MainActor.assumeIsolated {
-                            let r = ImageRenderer(content: ContentView(ac: model))
+                            let r = ImageRenderer(content: ContentView(ac: model).clipShape(RoundedRectangle(cornerRadius: 28)).padding(28))
                             r.scale = 2
                             if let cg = r.cgImage {
                                 let data = NSBitmapImageRep(cgImage: cg).representation(using: .png, properties: [:])

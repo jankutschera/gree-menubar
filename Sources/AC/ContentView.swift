@@ -18,6 +18,11 @@ struct ContentView: View {
     @State private var showMore = false
     @State private var hovered: String?
 
+    init(ac: ACModel) {
+        _ac = ObservedObject(wrappedValue: ac)
+        _draft = State(initialValue: Double(ac.setTemp))
+    }
+
     private var ready: Bool { !ac.s.isEmpty }
 
     var body: some View {
