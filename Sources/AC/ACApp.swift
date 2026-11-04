@@ -35,6 +35,38 @@ struct ACApp: App {
             print("login item status:", SMAppService.mainApp.status.rawValue, "(1 = enabled, 2 = needs approval in System Settings)")
             exit(0)
         }
+        // `AC --frames dir` renders a scripted demo sequence as PNG frames (for the README GIF).
+        if let i = CommandLine.arguments.firstIndex(of: "--frames"), i + 1 < CommandLine.arguments.count {
+            let dir = CommandLine.arguments[i + 1]
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                MainActor.assumeIsolated {
+                    let base = ["Pow": 0, "Mod": 1, "SetTem": 24, "WdSpd": 0, "SwUpDn": 1, "SvSt": 0, "SwhSlp": 0, "TemSen": 64]
+                    // (state changes, hold in frames)
+                    let steps: [([String: Int], Int)] = [
+                        ([:], 5), (["Pow": 1], 4), (["SetTem": 23], 2), (["SetTem": 22], 2), (["SetTem": 21], 2),
+                        (["SetTem": 20], 4), (["Mod": 4], 4), (["SetTem": 23], 2), (["SetTem": 25], 4),
+                        (["Mod": 1, "SetTem": 22], 3), (["SvSt": 1], 4), (["SwhSlp": 1], 4), (["WdSpd": 2], 4),
+                        (["Pow": 0], 4),
+                    ]
+                    var state = base
+                    var n = 0
+                    for (change, hold) in steps {
+                        state.merge(change) { $1 }
+                        for _ in 0..<hold {
+                            let r = ImageRenderer(content: ContentView(ac: ACModel(demo: state))
+                                .clipShape(RoundedRectangle(cornerRadius: 28)).padding(24)
+                                .background(Color(white: 0.16)))
+                            r.scale = 1
+                            if let cg = r.cgImage, let png = NSBitmapImageRep(cgImage: cg).representation(using: .png, properties: [:]) {
+                                try? png.write(to: URL(fileURLWithPath: String(format: "%@/f%03d.png", dir, n)))
+                            }
+                            n += 1
+                        }
+                    }
+                    exit(0)
+                }
+            }
+        }
         // `AC --status` prints the live state and exits (used to verify the connection).
         guard CommandLine.arguments.contains("--status") else { return }
         let done = DispatchSemaphore(value: 0)

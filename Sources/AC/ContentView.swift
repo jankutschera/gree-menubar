@@ -186,8 +186,9 @@ struct ContentView: View {
                 chip("Turbo", "bolt", on: ac.s["Tur"] == 1, help: "Turbo: maximum power for fast cooling or heating") { ac.toggle("Tur") }
                 chip("Quiet", "speaker.slash", on: (ac.s["Quiet"] ?? 0) > 0, help: "Quiet: lowest fan noise") { ac.toggle("Quiet") }
                 chip("Light", "lightbulb", on: ac.s["Lig"] == 1, help: "Display light on the AC unit") { ac.toggle("Lig") }
-                chip("Health", "heart", on: ac.s["Health"] == 1, help: "Health: air-cleaning function (ionizer)") { ac.toggle("Health") }
-                chip("X-Fan", "wind.snow", on: ac.s["Blo"] == 1, help: "X-Fan: keeps the fan running after switch-off to dry the unit") { ac.toggle("Blo") }
+                chip("Fresh air", "house", on: ac.s["Air"] == 1, help: "Fresh air: opens the fresh-air valve (only on units that have one)") { ac.toggle("Air") }
+                chip("Health", "heart", on: ac.s["Health"] == 1, help: "Health: cold plasma / ionizer (only on units with an anion generator)") { ac.toggle("Health") }
+                chip("X-Fan", "wind.snow", on: ac.s["Blo"] == 1, help: "X-Fan: keeps the fan running after switch-off to dry the unit (Cool and Dry modes only)") { ac.toggle("Blo") }
                 chip("Swing ↔", "arrow.left.and.right", on: ac.s["SwingLfRig"] == 1, help: "Left/right swing (only on units with a horizontal louver)") { ac.toggle("SwingLfRig") }
             }
             Button("Quit") { NSApplication.shared.terminate(nil) }

@@ -13,6 +13,12 @@ No remote to find. No cloud account. No Gree+ app. Just your Mac talking to your
 
 <img src="docs/screenshot.png" alt="AC for Mac: menu bar panel with temperature slider, mode, fan speed, sleep and airflow" width="380">
 
+<br><br>
+
+<img src="docs/demo.gif" alt="Animated demo: turning the AC on, lowering the temperature, switching to heat, eco and sleep" width="300">
+
+<sub>Animated demo rendered from the real interface with demo data.</sub>
+
 </div>
 
 ## What you get
@@ -25,15 +31,28 @@ No remote to find. No cloud account. No Gree+ app. Just your Mac talking to your
 | **Fan speed** | Auto, Low, Medium, High |
 | **Sleep, Eco** | One-tap toggles |
 | **Airflow** | Vertical flap: swing, or fixed at 5 positions |
-| **More controls** | Turbo, Quiet, display light, Health, X-Fan, left/right swing (behind the sliders icon) |
+| **More controls** | Turbo, Quiet, display light, Fresh air, Health, X-Fan, left/right swing (behind the sliders icon) |
 | **Hover hints** | Hover any button and the footer explains what it does |
 | **Menu bar** | Shows the target temperature while the AC is on. Right-click for *Launch at Login* and *Quit* |
 
 It is a native SwiftUI app with zero third-party dependencies and no network traffic outside your home network.
 
-## Quick start
+## Install
 
-You need macOS 14 or newer, the Xcode command line tools (`xcode-select --install`), and your AC on the same Wi-Fi as your Mac.
+### Option 1: download (no Xcode needed)
+
+1. Download `AC-mac.zip` from the [latest release](https://github.com/jankutschera/gree-menubar/releases/latest) and unzip it.
+2. Drag `AC.app` into your **Applications** folder and open it.
+3. macOS will say it can't verify the app, because it isn't notarized by Apple. Allow it once:
+   - open **System Settings → Privacy & Security**, scroll down and click **Open Anyway**, or
+   - run `xattr -dr com.apple.quarantine /Applications/AC.app` in Terminal, then open it again.
+4. Allow **Local Network** access when asked, otherwise macOS blocks the connection to your AC.
+
+The app is a universal build (Apple Silicon and Intel) for macOS 14 or newer. It is open source, so you can read exactly what it does.
+
+### Option 2: build from source
+
+You need the Xcode command line tools (`xcode-select --install`).
 
 ```sh
 git clone https://github.com/jankutschera/gree-menubar.git
@@ -43,9 +62,7 @@ cp -R build/AC.app /Applications/
 open /Applications/AC.app
 ```
 
-The first launch asks for **Local Network** access. Allow it, otherwise macOS blocks the connection to your AC.
-
-To start it at login, right-click the menu bar icon and choose **Launch at Login**.
+Your AC must be on the same Wi-Fi as your Mac. To start the app at login, right-click the menu bar icon and choose **Launch at Login**.
 
 ## Troubleshooting
 
@@ -53,15 +70,15 @@ To start it at login, right-click the menu bar icon and choose **Launch at Login
 |---|---|
 | "AC not found on the network" | Check System Settings → Privacy & Security → Local Network → enable AC. Make sure Mac and AC are on the same network (guest Wi-Fi and VLANs often block discovery). |
 | Discovery still fails | Skip it with the unit's IP: `GREE_IP=192.168.x.x /Applications/AC.app/Contents/MacOS/AC` |
-| Some buttons do nothing | Not every unit supports every feature (Eco, X-Fan, horizontal swing, Health). The AC may simply ignore features it doesn't have. |
+| Some buttons do nothing | Not every unit supports every feature (Eco, Fresh air, X-Fan, horizontal swing, Health). The AC may simply ignore features it doesn't have. |
 | Your unit has no local control | A few Gree units expose no local UDP service. They can't work with this app. |
 
 Debug helpers, handy for bug reports:
 
 ```sh
-AC.app/Contents/MacOS/AC --status                   # print the live state as the AC reports it
-AC.app/Contents/MacOS/AC --status --set SetTem=23   # send one command, then read back
-AC_DEMO=1 AC.app/Contents/MacOS/AC --snapshot a.png # render the panel with demo data
+/Applications/AC.app/Contents/MacOS/AC --status    # print the live state as the AC reports it
+/Applications/AC.app/Contents/MacOS/AC --status --set SetTem=23   # send one command, then read back
+AC_DEMO=1 /Applications/AC.app/Contents/MacOS/AC --snapshot a.png # render the panel with demo data
 ```
 
 ## How it works
