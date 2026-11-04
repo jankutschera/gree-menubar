@@ -2,11 +2,10 @@ import Combine
 import ServiceManagement
 import SwiftUI
 
+/// Plain AppKit entry point: no SwiftUI scenes, so the app can never open a stray window.
 @main
-struct ACApp: App {
-    @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
-
-    init() {
+enum ACMain {
+    static func main() {
         // `AC --snapshot out.png` renders the popover to a PNG (visual check without clicking).
         if let i = CommandLine.arguments.firstIndex(of: "--snapshot"), i + 1 < CommandLine.arguments.count {
             let path = CommandLine.arguments[i + 1]
@@ -68,7 +67,15 @@ struct ACApp: App {
             }
         }
         // `AC --status` prints the live state and exits (used to verify the connection).
-        guard CommandLine.arguments.contains("--status") else { return }
+        guard CommandLine.arguments.contains("--status") else {
+            MainActor.assumeIsolated {
+                let delegate = AppDelegate()
+                NSApplication.shared.delegate = delegate
+                NSApplication.shared.setActivationPolicy(.accessory)
+                withExtendedLifetime(delegate) { NSApplication.shared.run() }
+            }
+            return
+        }
         let done = DispatchSemaphore(value: 0)
         Task.detached {
             do {
@@ -84,10 +91,6 @@ struct ACApp: App {
         }
         done.wait()
         exit(0)
-    }
-
-    var body: some Scene {
-        Settings { EmptyView() }
     }
 }
 

@@ -15,7 +15,7 @@ cat > "$APP/Contents/Info.plist" <<'EOF'
 <plist version="1.0"><dict>
   <key>CFBundleIdentifier</key><string>com.truebrewbirdie.ac</string>
   <key>CFBundleName</key><string>AC</string>
-  <key>CFBundleShortVersionString</key><string>0.1.0</string>
+  <key>CFBundleShortVersionString</key><string>0.1.1</string>
   <key>CFBundleExecutable</key><string>AC</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>LSMinimumSystemVersion</key><string>14.0</string>
