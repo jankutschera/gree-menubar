@@ -1,4 +1,5 @@
 import Combine
+import ServiceManagement
 import SwiftUI
 
 @main
@@ -25,6 +26,14 @@ struct ACApp: App {
                     }
                 }
             }
+        }
+        // `AC --login-item on|off` registers/unregisters launch at login, then exits.
+        if let i = CommandLine.arguments.firstIndex(of: "--login-item"), i + 1 < CommandLine.arguments.count {
+            do {
+                if CommandLine.arguments[i + 1] == "on" { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
+            } catch { print("ERROR:", error.localizedDescription) }
+            print("login item status:", SMAppService.mainApp.status.rawValue, "(1 = enabled, 2 = needs approval in System Settings)")
+            exit(0)
         }
         // `AC --status` prints the live state and exits (used to verify the connection).
         guard CommandLine.arguments.contains("--status") else { return }
@@ -78,9 +87,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }.store(in: &bag)
     }
 
+    @objc private func toggleLogin() {
+        let service = SMAppService.mainApp
+        try? service.status == .enabled ? service.unregister() : service.register()
+    }
+
     @objc private func clicked(_ sender: NSStatusBarButton) {
         if NSApp.currentEvent?.type == .rightMouseUp {
             let menu = NSMenu()
+            let login = menu.addItem(withTitle: "Launch at Login", action: #selector(toggleLogin), keyEquivalent: "")
+            login.target = self
+            login.state = SMAppService.mainApp.status == .enabled ? .on : .off
+            menu.addItem(.separator())
             menu.addItem(withTitle: "Quit AC", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
             item?.menu = menu
             sender.performClick(nil)

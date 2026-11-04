@@ -48,4 +48,4 @@ Tested on one unit. Reading state, target temperature and the controls in the pa
 some features (eco, X-Fan, horizontal swing) depend on the model. Fan speeds are limited to
 Auto/Low/Medium/High, and temperature to whole degrees.
 
-Not affiliated with Gree. MIT licensed.
+Not affiliated with Gree. MIT licensed (see LICENSE).
